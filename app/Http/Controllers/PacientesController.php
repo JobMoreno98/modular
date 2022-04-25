@@ -59,7 +59,7 @@ class PacientesController extends Controller
     public function show(Pacientes $paciente)
     {
         $id = Auth::user()->id;
-        $cognicion = ProcesosCognitivos::where('id_paciente', $paciente->id)->orderBy('id','desc')->get();
+        $cognicion = ProcesosCognitivos::where('id_paciente', $paciente->id)->orderBy('id', 'desc')->get();
         if (count($cognicion) > 0) {
             $cognicion = $cognicion[0];
         }
@@ -159,11 +159,44 @@ class PacientesController extends Controller
 
         return view('Pacientes.actividades', compact('paciente', 'actividades', 'actividad'));
     }
-    public function activity_update(Request $request, Pacientes $paciente)
+    public function activity_select(Request $request, Pacientes $paciente)
     {
         $request->validate([
             'aceptar' => 'required'
         ]);
+        //return $request;
+        $actividades = collect();
+        //dd($actividades[0]['Orientacion']);
+        //return $request;
+        $n_actividades = [
+            'Orientacion' => $request->orientacion, 'Atención y Concentracion' => $request->atencion_concentracion, 'Memoria' => $request->atencion,
+            'Funciones Ejecutivas' => $request->atencion, 'Lenguaje' => $request->atencion, 'Percepción' => $request->atencion
+        ];
+
+        $n_actividades = collect($n_actividades);
+        foreach ($n_actividades as $key => $valores) {
+            if ($valores != null) {
+                foreach ($valores as $llaves => $item) {
+                    $actividades->add(Actividad::select('id','nombre','especializa')->where('id','=',$item)->get()[0]);
+                }
+            }
+        }
+
+        //return $actividades;
+
+
+        return view('pacientes.seleccion_dia')->with('paciente', $paciente)->with('actividades', $actividades);
+    }
+    public function register(Request $request, Pacientes $paciente){
+        $request->validate([
+            'aceptar' => 'required'
+        ]);
+        return $request;
+    }
+
+    public function activity_update(Request $request, Pacientes $paciente)
+    {
+
         $id_doctor = Auth::user()->id;
         $id = $paciente->id;
         Historial::create([
@@ -191,7 +224,7 @@ class PacientesController extends Controller
         $procesos = ProcesosCognitivos::where('id_paciente', $paciente->id)->limit(1)->get()[0];
         return view('Pacientes.edit', compact('paciente', 'procesos'));
     }
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         # Se hace la validacion de 
         $request->validate([
@@ -200,7 +233,7 @@ class PacientesController extends Controller
             'enfermedad' => 'required'
         ]);
         $id = Auth::user()->id;
-        Pacientes::where('id','=',$id)->update([
+        Pacientes::where('id', '=', $id)->update([
             'nombre' => $request->nombre,
             'fecha_nacimiento' => $request->fecha_nacimiento,
             'genero' => $request->genero,
@@ -210,7 +243,7 @@ class PacientesController extends Controller
             'id_doctor' => $id
         ]);
         ProcesosCognitivos::create([
-            'id_paciente'=>$request->id,
+            'id_paciente' => $request->id,
             'orientacion' => $request->orientacion,
             'atencion_concentracion' => $request->atencion_concentarcion,
             'memoria' => $request->memoria,

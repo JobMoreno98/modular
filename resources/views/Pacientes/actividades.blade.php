@@ -1,7 +1,7 @@
 @php($o = ['1' => 'Normal Alto', '2' => 'Normal', '3' => 'Leve Moderado', '4' => 'Severo'])
-@php($values = ['Orientación' => 'orientacion', 'Atención y Concentración' => 'atencion_concentracion',
+@php($values = ['Orientacion' => 'orientacion', 'Atención y Concentracion' => 'atencion_concentracion',
             'Memoria' => 'memoria', 'Funciones Ejecutivas' => 'funciones_ejecutivas',
-            'Lenguaje'=>'lenguaje','Precepción'=>'percepcion'
+            'Lenguaje'=>'lenguaje','Precepcion'=>'percepcion'
 ])
 @extends('layouts.plantilla')
 @section('titulo', 'Actividades - Paciente')
@@ -14,16 +14,16 @@
     <hr>
     <div class="row">
         @php($o = ['1' => 'Normal Alto', '2' => 'Normal', '3' => 'Leve Moderado', '4' => 'Severo'])
-        <form class="row" action="{{route('pacientes.activity_update',['paciente'=> $paciente->id])}}" method="post">
+        <form class="row" action="{{route('pacientes.activity_select',['paciente'=> $paciente->id])}}" method="post">
             @csrf
             @foreach ($actividades as $key => $valores)
                 <h5>{{ $key }}</h5>
                 @foreach ($valores as $llaves => $item)
                     <div class="form-check" >
-                        <input name="{{$key}}[]" value="{{$item->id}}" class="form-check-input" type="checkbox" value="" id="{{$item->id}}">
+                        <input name="{{$values[$key]}}[]" value="{{$item->id}}" class="form-check-input" type="checkbox" value="" id="{{$item->id}}">
                         <label class="form-check-label" for="{{$item->id}}">
                             <b>Nombre:</b> {{ $item->nombre }}
-                            <b> Nivel de cognición:</b> {{ $o[$item->grado] }}
+                            <b>Nivel de cognición:</b> {{ $o[$item->grado] }}
                             <b>Descripción:</b> {{ $item->descripcion }}
                         </label>
                     </div>
@@ -34,7 +34,7 @@
                 <hr>
             @endforeach
             <div class="col-auto  text-center align-middle">
-                <button type="submit" class="btn btn-success"> Actualizar Actividades</button>
+                <button type="submit" class="btn btn-success">Siguiente paso</button>
             </div>
             <br>
             <div class="col-auto text-center">

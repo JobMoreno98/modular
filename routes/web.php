@@ -40,6 +40,13 @@ Route::post(
     [PacientesController::class, 'activity_update']
 )->name('pacientes.activity_update')->middleware('auth');
 
+#
+
+Route::post('pacientes/{paciente}/actividades/select',[PacientesController::class, 'activity_select'])->name('pacientes.activity_select')->middleware('auth');
+
+
+Route::post('pacientes/{paciente}/actividades/register',[PacientesController::class, 'register'])->name('pacientes.register')->middleware('auth');
+
 # Ruta para hacer la busqueda en el index de los pacientes
 Route::post(
     'pacientes/',
