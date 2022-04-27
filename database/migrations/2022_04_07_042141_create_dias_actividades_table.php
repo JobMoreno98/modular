@@ -22,10 +22,6 @@ class CreateDiasActividadesTable extends Migration
             $table->unsignedBigInteger('id_historial');
             $table->foreign('id_historial')->references('id')->on('historials');
             $table->string('dias');
-            $table->string('fecha_inicio');
-            $table->string('fecha_termino');
-
-            
         });
     }
 

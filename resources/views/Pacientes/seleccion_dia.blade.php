@@ -7,7 +7,6 @@
             <h3>Por favor Selecciona los dias para realizar cada actividad</h3>
             <hr>
         </div>
-
         <form class="row" action="{{route('pacientes.register',['paciente'=> $paciente->id])}}" method="post">
             @csrf
             @foreach ($actividades as $key => $valores)
@@ -75,7 +74,7 @@
             </div>
             <br>
             <div class="col-auto text-center">
-                <input type="checkbox" name="aceptar" id="aceptar" class="btn form-check-input" >
+                <input type="checkbox" name="aceptar" id="aceptar" class="btn form-check-input" required>
                 <label class="form-check-label" for="aceptar">Aceptar cambios</label>
                 @error('aceptar')
                 <span class="alert alert-danger">{{$message}}</span>

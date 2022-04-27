@@ -7,7 +7,7 @@ use App\Models\Pacientes;
 use App\Models\Actividad;
 use App\Models\Historial;
 use App\Models\ProcesosCognitivos;
-use Carbon\Carbon;
+use App\Models\DiasActividades;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 
@@ -35,13 +35,14 @@ class PacientesController extends Controller
             'enfermedad' => 'required'
         ]);
         $id = Auth::user()->id;
+        //return $request;
         $paciente = Pacientes::create([
             'nombre' => $request->nombre,
             'fecha_nacimiento' => $request->fecha_nacimiento,
             'genero' => $request->genero,
             'escolaridad' => $request->escolaridad,
             'enfermedad' => $request->enfermedad,
-            'enfermedades' => (sizeof($request->enfermedades) > 0) ? implode(',', $request->enfermedades) : 'Ninguna',
+            'enfermedades' => (Arr::exists($request, 'enfermedades')) ?  implode(',', $request->enfermedades) : 'Ninguna',
             'id_doctor' => $id
         ]);
         $id_paciente = $paciente->id;
@@ -164,16 +165,11 @@ class PacientesController extends Controller
         $request->validate([
             'aceptar' => 'required'
         ]);
-        //return $request;
         $actividades = collect();
-        //dd($actividades[0]['Orientacion']);
-        //return $request;
         $n_actividades = [
-            'Orientacion' => $request->orientacion, 'Atención y Concentracion' => $request->atencion_concentracion, 'Memoria' => $request->atencion,
-            'Funciones Ejecutivas' => $request->atencion, 'Lenguaje' => $request->atencion, 'Percepción' => $request->atencion
+            'Orientacion' => $request->orientacion, 'Atención y Concentracion' => $request->atencion_concentracion, 'Memoria' => $request->memoria,
+            'Funciones Ejecutivas' => $request->funciones_ejecutivas, 'Lenguaje' => $request->lenguaje, 'Percepción' => $request->percepcion
         ];
-
-        $n_actividades = collect($n_actividades);
         foreach ($n_actividades as $key => $valores) {
             if ($valores != null) {
                 foreach ($valores as $llaves => $item) {
@@ -182,16 +178,45 @@ class PacientesController extends Controller
             }
         }
 
-        //return $actividades;
-
-
         return view('pacientes.seleccion_dia')->with('paciente', $paciente)->with('actividades', $actividades);
     }
     public function register(Request $request, Pacientes $paciente){
         $request->validate([
             'aceptar' => 'required'
         ]);
-        return $request;
+        $valores = $request->except(['_token','aceptar']);
+        $actividades = [
+            'Orientacion' => [], 'Atención y Concentración' => [], 'Memoria' => [],
+            'Funciones Ejecutivas' => [], 'Lenguaje' => [], 'Percepción' => []
+        ];
+        foreach ($valores as $llave => $key){
+            $temp = Actividad::select('id','especializa')->where('id','=',$llave)->get()[0];
+            array_push($actividades[$temp->especializa],$temp->id);
+        }
+
+        $id_doctor = Auth::user()->id;
+        $id = $paciente->id;
+        $h = Historial::create([
+            'id_paciente' => $id,
+            'orientacion' => (Arr::exists($actividades, 'Orientacion')) ? implode(',', $actividades['Orientacion']) : '',
+            'atencion_concentracion' => (Arr::exists($actividades, 'Atención y Concentración')) ? implode(',', $actividades['Atención y Concentración']) : '',
+            'memoria' => (Arr::exists($actividades, 'Memoria')) ? implode(',', $actividades['Memoria']) : '',
+            'funciones_ejecutivas' => (Arr::exists($actividades, 'Funciones Ejecutivas')) ? implode(',', $actividades['Funciones Ejecutivas']) : '',
+            'lenguaje' => (Arr::exists($actividades, 'Lenguaje')) ? implode(',', $actividades['Lenguaje']) : '',
+            'percepcion' => (Arr::exists($actividades, 'Percepción')) ? implode(',', $actividades['Percepción']) : ''
+        ]);
+        foreach ($valores as $llave => $key){
+            DiasActividades::create([
+                'id_paciente' => $paciente->id,
+                'id_actividad' => $llave,
+                'id_historial' => $h->id,
+                'dias' => implode(',', $key)
+            ]);
+        }
+
+        //return True;
+        return Redirect()->route('pacientes.show', ['id_doctor' => $id_doctor, 'paciente' => $id]);
+
     }
 
     public function activity_update(Request $request, Pacientes $paciente)
@@ -210,6 +235,7 @@ class PacientesController extends Controller
         ]);
         return Redirect()->route('pacientes.show', ['id_doctor' => $id_doctor, 'paciente' => $id]);
     }
+    
     public function search(Request $request)
     {
         if ($request->ajax()) {
