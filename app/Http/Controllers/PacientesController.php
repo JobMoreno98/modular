@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pacientes;
+use App\Models\User;
 use App\Models\Actividad;
 use App\Models\Historial;
 use App\Models\ProcesosCognitivos;
 use App\Models\DiasActividades;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
 
 class PacientesController extends Controller
 {
+    public function cuadro(){
+        return view('Actividades.cuadros');
+    }
 
     public function index()
     {
@@ -45,7 +50,9 @@ class PacientesController extends Controller
             'enfermedades' => (Arr::exists($request, 'enfermedades')) ?  implode(',', $request->enfermedades) : 'Ninguna',
             'id_doctor' => $id
         ]);
+
         $id_paciente = $paciente->id;
+
         ProcesosCognitivos::create([
             'id_paciente' => $id_paciente,
             'orientacion' => $request->orientacion,
@@ -55,6 +62,14 @@ class PacientesController extends Controller
             'lenguaje' => $request->lenguaje,
             'percepcion' => $request->percepcion,
         ]);
+
+        $usuario = new User();
+        $usuario->name = $request->nombre;
+        $usuario->tipo = 'paciente';
+        $usuario->email = $request->nombre;
+        $usuario->password = Hash::make(Auth::user()->name);
+        $usuario->save();
+
         return redirect()->route('pacientes.index', $id);
     }
     public function show(Pacientes $paciente)
@@ -191,6 +206,7 @@ class PacientesController extends Controller
         ];
         foreach ($valores as $llave => $key){
             $temp = Actividad::select('id','especializa')->where('id','=',$llave)->get()[0];
+            echo $temp->especializa;
             array_push($actividades[$temp->especializa],$temp->id);
         }
 
@@ -240,7 +256,7 @@ class PacientesController extends Controller
     {
         if ($request->ajax()) {
             $id = Auth::user()->id;
-            $pacientes = Pacientes::where($request->buscar_por, 'LIKE', '%' . $request->buscar . '%')->paginate(5);
+            $pacientes = Pacientes::where($request->buscar_por, 'LIKE', '%' . $request->buscar . '%')->where('id_doctor',Auth::user()->id)->paginate(5);
             return view('Pacientes.plantilla', compact('pacientes'))->render();
         }
         //return response(json_encode($pacientes),200)->header('Content-type','text/plain');

@@ -53,6 +53,14 @@ Route::post(
     [PacientesController::class, 'search']
 )->name('pacientes.search')->middleware('auth');
 
+
+Route::get(
+    'cuadros',
+    [PacientesController::class, 'cuadro']
+)->name('pacientes.cuadros')->middleware('auth');
+
+
+
 # Ver perfil del usuario
 Route::get('perfil', [UserController::class, 'perfil'])->name('usuario.perfil')->middleware('auth');
 
@@ -62,5 +70,4 @@ Route::resource('actividades', PacientesController::class)->except([
 ])->middleware('auth');
 
 Route::get('activdades', [ActividadController::class, 'index'])->name('actividades.index')->middleware('auth');
-Route::post('activdades/registro', [ActividadController::class, 'registro'])->name('actividades.registro')->middleware('auth');
-Route::post('activdades/buscar', [ActividadController::class, 'buscar'])->name('actividades.buscar')->middleware('auth');
+Route::get('activdades/{nombre}', [ActividadController::class, 'buscar'])->name('actividad')->middleware('auth');

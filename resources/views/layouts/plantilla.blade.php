@@ -2,7 +2,6 @@
 <html lang="es">
 
 <head>
-
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="cache-control" content="no-store" />
@@ -20,7 +19,8 @@
     <title>@yield('titulo')</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script  type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+    <script  type="text/javascript" src="{{ asset('js/jquery-1.11.2.min.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -30,6 +30,8 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/estilos.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 </head>
 
 <body>
@@ -48,9 +50,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        <a class="navbar-brand" href="{{ route('pacientes.index') }}">Pacientes</a>
-                        <a class="navbar-brand"
-                            href="{{ route('actividades.index') }}">Actividades</a>
+                        @if (Auth::check() && Auth::user()->tipo == 'doctor')
+                            <a class="navbar-brand" href="{{ route('pacientes.index') }}">Pacientes</a>
+                        @endif
+                        @if (Auth::check() && Auth::user()->tipo == 'paciente')
+                        <a class="navbar-brand" href="{{ route('actividades.index') }}">Actividades</a>
+                        @endif
+                        
                     </ul>
 
                     <!-- Right Side Of Navbar -->
