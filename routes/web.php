@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PacientesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActividadController;
+use App\Http\Controllers\CitasController;
 
 Auth::routes();
 
@@ -40,8 +41,9 @@ Route::post(
     [PacientesController::class, 'activity_update']
 )->name('pacientes.activity_update')->middleware('auth');
 
+#Analsiis Pacientes
+Route::get('analisis_pacientes',[PacientesController::class,'analisis'])->name('analisis')->middleware('auth');
 #
-
 Route::post('pacientes/{paciente}/actividades/select',[PacientesController::class, 'activity_select'])->name('pacientes.activity_select')->middleware('auth');
 
 
@@ -71,3 +73,7 @@ Route::resource('actividades', PacientesController::class)->except([
 
 Route::get('activdades', [ActividadController::class, 'index'])->name('actividades.index')->middleware('auth');
 Route::get('activdades/{nombre}', [ActividadController::class, 'buscar'])->name('actividad')->middleware('auth');
+
+# Citas
+
+Route::get('citas/{paciente}',[CitasController::class,'store'])->name('citas')->middleware('auth');

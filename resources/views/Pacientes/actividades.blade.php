@@ -8,8 +8,8 @@
 @section('content')
     <br>
     <div class="row">
-        <h4>Aviso si usted desmarca todas las casillas y envia el formulario no asignara ninguna actividad</h4>
-        <h5>Actividades Actuales Disponibles</h5>
+        {{--<h4>Aviso si usted desmarca todas las casillas y envia el formulario no asignara ninguna actividad</h4>--}}
+        <h4>Actividades Actuales Disponibles</h4>
     </div>
     <hr>
     <div class="row">

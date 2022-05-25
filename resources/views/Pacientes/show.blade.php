@@ -18,6 +18,9 @@ $edad = $hoy->diff($fecha);
                 <div class="col-sm-12 col-md-4">
                     <p><b>Edad</b> {{ $edad->y }}</p>
                 </div>
+                <div class="col-sm-12 col-md-4 ">
+                    <p ><span class="border-bottom border-dark"><b>Estado General </b> {{ $paciente->general }}</span></p>
+                </div>
             </div>
             <div class="row justify-content-between">
                 <div class="col-sm-12 col-md-4">
@@ -95,11 +98,12 @@ $edad = $hoy->diff($fecha);
 <br>
 <div class="row justify-content-end">
     <div class="col-sm-12 ">
-        <a href="{{ route('pacientes.activity', ['paciente' => $paciente->id]) }}" class="btn btn-primary col-sm-12 col-md-3  m-1">Editar Actividades</a>
+        <a href="{{ route('pacientes.activity', ['paciente' => $paciente->id]) }}" class="btn btn-primary col-sm-12 col-md-3  m-1">Actualizar Actividades</a>
 
-        <a href="{{route('pacientes.edit', ['paciente' => $paciente->id])}}" class="btn btn-success col-sm-12 col-md-3   m-1">Actualizar Estado</a>
+        <a href="{{route('pacientes.edit', ['paciente' => $paciente->id])}}" class="btn btn-success col-sm-12 col-md-3  col-xl-2  m-1">Editar</a>
 
         <a href="{{ route('pacientes.history', ['paciente' => $paciente->id]) }}" class="btn btn-dark col-sm-12 col-md-3 col-xl-2 m-1">Ver Historial</a>
+        <a class="btn btn-outline-danger col-sm-6 col-md-2  m-1" href="">Eliminar</a>
     </div>
 </div>
 <br>

@@ -15,7 +15,8 @@ use Illuminate\Support\Arr;
 
 class PacientesController extends Controller
 {
-    public function cuadro(){
+    public function cuadro()
+    {
         return view('Actividades.cuadros');
     }
 
@@ -188,26 +189,27 @@ class PacientesController extends Controller
         foreach ($n_actividades as $key => $valores) {
             if ($valores != null) {
                 foreach ($valores as $llaves => $item) {
-                    $actividades->add(Actividad::select('id','nombre','especializa')->where('id','=',$item)->get()[0]);
+                    $actividades->add(Actividad::select('id', 'nombre', 'especializa')->where('id', '=', $item)->get()[0]);
                 }
             }
         }
 
         return view('pacientes.seleccion_dia')->with('paciente', $paciente)->with('actividades', $actividades);
     }
-    public function register(Request $request, Pacientes $paciente){
+    public function register(Request $request, Pacientes $paciente)
+    {
         $request->validate([
             'aceptar' => 'required'
         ]);
-        $valores = $request->except(['_token','aceptar']);
+        $valores = $request->except(['_token', 'aceptar']);
         $actividades = [
             'Orientacion' => [], 'Atención y Concentración' => [], 'Memoria' => [],
             'Funciones Ejecutivas' => [], 'Lenguaje' => [], 'Percepción' => []
         ];
-        foreach ($valores as $llave => $key){
-            $temp = Actividad::select('id','especializa')->where('id','=',$llave)->get()[0];
+        foreach ($valores as $llave => $key) {
+            $temp = Actividad::select('id', 'especializa')->where('id', '=', $llave)->get()[0];
             echo $temp->especializa;
-            array_push($actividades[$temp->especializa],$temp->id);
+            array_push($actividades[$temp->especializa], $temp->id);
         }
 
         $id_doctor = Auth::user()->id;
@@ -221,7 +223,7 @@ class PacientesController extends Controller
             'lenguaje' => (Arr::exists($actividades, 'Lenguaje')) ? implode(',', $actividades['Lenguaje']) : '',
             'percepcion' => (Arr::exists($actividades, 'Percepción')) ? implode(',', $actividades['Percepción']) : ''
         ]);
-        foreach ($valores as $llave => $key){
+        foreach ($valores as $llave => $key) {
             DiasActividades::create([
                 'id_paciente' => $paciente->id,
                 'id_actividad' => $llave,
@@ -232,7 +234,6 @@ class PacientesController extends Controller
 
         //return True;
         return Redirect()->route('pacientes.show', ['id_doctor' => $id_doctor, 'paciente' => $id]);
-
     }
 
     public function activity_update(Request $request, Pacientes $paciente)
@@ -251,13 +252,14 @@ class PacientesController extends Controller
         ]);
         return Redirect()->route('pacientes.show', ['id_doctor' => $id_doctor, 'paciente' => $id]);
     }
-    
+
     public function search(Request $request)
     {
         if ($request->ajax()) {
             $id = Auth::user()->id;
-            $pacientes = Pacientes::where($request->buscar_por, 'LIKE', '%' . $request->buscar . '%')->where('id_doctor',Auth::user()->id)->paginate(5);
-            return view('Pacientes.plantilla', compact('pacientes'))->render();
+            $pacientes = Pacientes::where($request->buscar_por, 'LIKE', '%' . $request->buscar . '%')->where('id_doctor', Auth::user()->id)->paginate(5);
+            $termino = $request->buscar;
+            return view('Pacientes.plantilla', compact('pacientes','termino'))->render();
         }
         //return response(json_encode($pacientes),200)->header('Content-type','text/plain');
     }
@@ -294,5 +296,65 @@ class PacientesController extends Controller
             'percepcion' => $request->percepcion,
         ]);
         return redirect()->route('pacientes.show', $id);
+    }
+    public function analisis()
+    {
+        $pacientes = Pacientes::where('id_doctor', Auth::user()->id)->get();
+        $patient = [];
+        foreach ($pacientes as $paciente) {
+
+            $procesos = ProcesosCognitivos::where('id_paciente', $paciente->id)->latest('id')->first();
+            $State = [
+                $procesos->orientacion,
+                $procesos->atencion_concentracion,
+                $procesos->memoria,
+                $procesos->funciones_ejecutivas,
+                $procesos->lenguaje,
+                $procesos->percepcion
+            ];
+            $nombre = explode(" ", $paciente->nombre);
+            array_push($patient, ["Name" => $nombre[0] . " " . $nombre[1][0], 'State' => $State]);
+        }
+        $temp = ['patients' => $patient];
+        //return $temp;
+        $url = 'https://reduccion-dimensionalidad.herokuapp.com/coordinates';
+        /*$ch = curl_init($url);
+        $payload = json_encode($temp);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        return $result = curl_exec($ch);
+        dd($result);
+
+*/
+
+        $curl = curl_init($url);
+        $content = json_encode($temp);
+        return $content;
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array("Content-type: application/json")
+        );
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
+
+        $json_response = curl_exec($curl);
+
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        if ($status != 201) {
+            die("Error: call to URL $url failed with status $status, response $json_response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
+        }
+
+
+        curl_close($curl);
+
+        $response = json_decode($json_response, true);
+        return $response;
+        //return json_encode($temp);
     }
 }

@@ -22,14 +22,19 @@ class PacientesFactory extends Factory
      */
     public function definition()
     {
+        $array =  ['Normal Alto','Normal','Moderado','Severo'];
+        $num = random_int(0,3);
+        $genero = ['H','M'];
+        
         return [
             'nombre'=>$this->faker->name(),
             'fecha_nacimiento'=> $this->faker->date($format = 'Y-m-d', $max = 'now'),
-            'genero'=>Str::random(1),
+            'genero'=>$genero[random_int(0,1)],
             'escolaridad'=>'Sin Estudios',
             'enfermedad'=>'Alzhaimer',
+            'general'=> $array[$num],
             'enfermedades'=>' ',
-            'id_doctor'=> 1,
+            'id_doctor'=> random_int(1,2),
         ];
     }
 }

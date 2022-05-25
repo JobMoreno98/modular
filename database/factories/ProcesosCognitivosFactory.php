@@ -22,14 +22,21 @@ class ProcesosCognitivosFactory extends Factory
      */
     public function definition()
     {
+        $array =  [1,2,3,4];
+        $num_t = [];
+        for ($i=0; $i < 6; $i++) { 
+            $num = random_int(0,3);
+            array_push($num_t,$num);
+        }
+        
         return [
             'id_paciente'=>Pacientes::factory(),
-            'orientacion'=>3,
-            'atencion_concentracion'=>2,
-            'memoria'=>2,
-            'funciones_ejecutivas'=>1,
-            'lenguaje'=>2,
-            'percepcion'=>4,
+            'orientacion'=>$array[$num_t[0]],
+            'atencion_concentracion'=>$array[$num_t[1]],
+            'memoria'=>$array[$num_t[2]],
+            'funciones_ejecutivas'=>$array[$num_t[3]],
+            'lenguaje'=>$array[$num_t[4]],
+            'percepcion'=>$array[$num_t[5]],
         ];
     }
 }

@@ -109,6 +109,15 @@
                     <option value="4">Severo</option>
                 </select>
             </div>
+            <div class="col-sm- 12 col-md-3">
+                <label for="general" class="form-label">Estdo General del Paciente</label>
+                <select class="form-control" name="general" id="general">
+                    <option value="1">Normal Alto</option>
+                    <option value="2">Normal</option>
+                    <option value="3">Leve Moderado</option>
+                    <option value="4">Severo</option>
+                </select>
+            </div>
         </div>
 
         <hr />

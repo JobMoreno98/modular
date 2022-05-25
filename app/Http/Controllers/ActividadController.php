@@ -77,7 +77,8 @@ class ActividadController extends Controller
         ]);
         return redirect()->route('actividades.index',$id);
     }
-    public function buscar($nombre){
-        return view('Actividades.'.$nombre);
+    public function buscar(Actividad $nombre){
+        
+        return view('Actividades.'.$nombre->nombre,compact('nombre'));
     }
 }

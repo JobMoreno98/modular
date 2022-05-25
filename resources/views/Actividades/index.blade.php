@@ -9,7 +9,7 @@
                 <h3>Actividades</h3>
                 <hr>
                 @foreach ($activity as $item)
-                    <a href="{{ route('actividad', $item->nombre) }}" class="text-left btn btn-outline-dark">
+                    <a href="{{ route('actividad', $item->id) }}" class="text-left btn btn-outline-dark">
                         <div class="col-sm-12">
                             Nombre: {{ $item->nombre }} <br>
                             Descripción:{{ $item->descripcion }}

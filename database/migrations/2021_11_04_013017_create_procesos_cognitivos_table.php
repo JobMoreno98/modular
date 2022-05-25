@@ -13,6 +13,7 @@ class CreateProcesosCognitivosTable extends Migration
      */
     public function up()
     {
+        
         Schema::create('procesos_cognitivos', function (Blueprint $table) {
             $table->id('id');
             $table->unsignedBigInteger('id_paciente');
