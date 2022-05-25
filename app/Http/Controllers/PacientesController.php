@@ -47,6 +47,7 @@ class PacientesController extends Controller
             'fecha_nacimiento' => $request->fecha_nacimiento,
             'genero' => $request->genero,
             'escolaridad' => $request->escolaridad,
+            'general' => $request->general,
             'enfermedad' => $request->enfermedad,
             'enfermedades' => (Arr::exists($request, 'enfermedades')) ?  implode(',', $request->enfermedades) : 'Ninguna',
             'id_doctor' => $id
@@ -259,7 +260,7 @@ class PacientesController extends Controller
             $id = Auth::user()->id;
             $pacientes = Pacientes::where($request->buscar_por, 'LIKE', '%' . $request->buscar . '%')->where('id_doctor', Auth::user()->id)->paginate(5);
             $termino = $request->buscar;
-            return view('Pacientes.plantilla', compact('pacientes','termino'))->render();
+            return view('Pacientes.plantilla', compact('pacientes', 'termino'))->render();
         }
         //return response(json_encode($pacientes),200)->header('Content-type','text/plain');
     }
@@ -318,20 +319,34 @@ class PacientesController extends Controller
         $temp = ['patients' => $patient];
         //return $temp;
         $url = 'https://reduccion-dimensionalidad.herokuapp.com/coordinates';
-        /*$ch = curl_init($url);
-        $payload = json_encode($temp);
+        $ch = curl_init($url);
+        $payload = json_encode(array("patients" => $patient));
+
+        // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+
+        // Set the content type to application/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+
+        // Return response instead of outputting
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        return $result = curl_exec($ch);
-        dd($result);
+        // Execute the POST request
+        $result = curl_exec($ch);
 
-*/
+
+        // Close cURL resource
+        curl_close($ch);
+
+        //return $result;
+
+        /*
 
         $curl = curl_init($url);
         $content = json_encode($temp);
-        return $content;
+        //return $content;
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(
@@ -351,10 +366,10 @@ class PacientesController extends Controller
         }
 
 
-        curl_close($curl);
-
-        $response = json_decode($json_response, true);
-        return $response;
+        return curl_close($curl);
+*/
+        //$response = json_decode($json_response, true);
+        return view('Pacientes.analisis',compact('result'));
         //return json_encode($temp);
     }
 }

@@ -4,7 +4,7 @@
     <?php $cont = 5 + $nombre->grado; ?>
     <br>
     <div class="container" onload="inicio()">
-    {{$nombre}}
+    <h3> {{$nombre->descripcion}}</h3>
         <button onclick="colores()" class="btn btn-primary">Empezar</button>
         <div class="row" style="height: 250px;">
             @for ($i = 0; $i < $cont; $i++)
