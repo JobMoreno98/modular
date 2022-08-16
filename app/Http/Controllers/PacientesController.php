@@ -195,7 +195,7 @@ class PacientesController extends Controller
             }
         }
 
-        return view('pacientes.seleccion_dia')->with('paciente', $paciente)->with('actividades', $actividades);
+        return view('Pacientes.seleccion_dia')->with('paciente', $paciente)->with('actividades', $actividades);
     }
     public function register(Request $request, Pacientes $paciente)
     {

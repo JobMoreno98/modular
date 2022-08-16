@@ -34,7 +34,7 @@ class PacientesFactory extends Factory
             'enfermedad'=>'Alzhaimer',
             'general'=> $array[$num],
             'enfermedades'=>' ',
-            'id_doctor'=> random_int(1,2),
+            'id_doctor'=> random_int(1,5),
         ];
     }
 }

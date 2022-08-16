@@ -90,6 +90,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
         ],
+        'mysql3' => [
+            'driver'    => 'mysql',
+            'host'      => env('DB_HOST_THIRD','localhost'),
+            'port'      => env('DB_PORT_THIRD'),
+            'database'  => env('DB_DATABASE_THIRD',''),
+            'username'  => env('DB_USERNAME_THIRD',''),
+            'password'  => env('DB_PASSWORD_THIRD',''),
+        ],
 
     ],
 
